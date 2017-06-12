@@ -1,0 +1,40 @@
+db:
+    image: postgres:9.6
+    environment:
+        - POSTGRES_DB
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
+    ports:
+        - "5432"
+    volumes:
+        - ./docker-vol/postgresql:/var/lib/postgresql
+
+web:
+    build: .
+    volumes:
+        - ./docker-vol:/opt/localshop
+    links:
+        - db:db
+    environment:
+        - DJANGO_SECRET_KEY
+        - DATABASE_URL
+        - DJANGO_MEDIA_ROOT
+    ports:
+        - "8000:8000"
+    command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
+
+
+worker:
+    build: .
+    volumes:
+        - ./docker-vol:/opt/localshop
+    links:
+        - db:db
+    environment:
+        - DJANGO_SECRET_KEY
+        - DATABASE_URL
+        - DJANGO_MEDIA_ROOT
+    entrypoint:
+        localshop
+    command:
+        celery worker -B -E

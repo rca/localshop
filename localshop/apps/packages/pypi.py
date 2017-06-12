@@ -1,8 +1,13 @@
 import re
 import requests
-import xmlrpclib
 from copy import copy
-from StringIO import StringIO
+
+from django.utils import six
+
+if six.PY2:
+    import xmlrpclib
+else:
+    import xmlrpc.client as xmlrpclib
 
 
 class RequestTransport(xmlrpclib.Transport, object):
@@ -30,7 +35,7 @@ class RequestTransport(xmlrpclib.Transport, object):
 
         if response.status_code == 200:
             self.verbose = verbose
-            fh = StringIO(response.content)
+            fh = six.StringIO(response.content)
             return self.parse_response(fh)
 
 
@@ -42,16 +47,16 @@ def get_search_names(name):
     pyramid-debugtoolbar.
 
     """
-    parts = re.split('[-_]', name)
+    parts = re.split('[-_.]', name)
     if len(parts) == 1:
         return parts
 
     result = set()
     for i in range(len(parts) - 1, 0, -1):
-        for s1 in '-_':
+        for s1 in '-_.':
             prefix = s1.join(parts[:i])
-            for s2 in '-_':
+            for s2 in '-_.':
                 suffix = s2.join(parts[i:])
-                for s3 in '-_':
+                for s3 in '-_.':
                     result.add(s3.join([prefix, suffix]))
     return list(result)
