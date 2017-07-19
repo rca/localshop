@@ -263,13 +263,19 @@ class Base(Settings):
     AWS_ACCESS_KEY_ID = values.Value()
     AWS_SECRET_ACCESS_KEY = values.Value()
     AWS_STORAGE_BUCKET_NAME = values.Value()
-    
+
     # LDAP Authentication
-    AUTH_LDAP_SERVER_URI = "ldap://ldapsample.com"
-    AUTH_LDAP_BIND_DN = "cn=username,dc=ldapsample,dc=com"
-    AUTH_LDAP_BIND_PASSWORD = "sompass"
+    AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', 'ldap://ldapsample.com')
+    AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', 'cn=username,dc=ldapsample,dc=com')
+    AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD', 'sompass')
+
     #AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=ldapsample,dc=com"
-    AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=ldapsample,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+    if 'AUTH_LDAP_USER_DN_TEMPLATE' in os.environ:
+        AUTH_LDAP_USER_DN_TEMPLATE = os.environ['AUTH_LDAP_USER_DN_TEMPLATE']
+
+    AUTH_LDAP_USER_SEARCH_BASE = os.environ.get('AUTH_LDAP_USER_SEARCH_BASE', 'ou=users,dc=ldapsample,dc=com')
+    AUTH_LDAP_USER_SEARCH_QUERY = os.environ.get('AUTH_LDAP_USER_SEARCH_QUERY', '(uid=%(user)s)')
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(AUTH_LDAP_USER_SEARCH_BASE, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_QUERY)
 
 
 class TestConfig(Base):
