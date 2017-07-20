@@ -9,34 +9,84 @@ services:
         ports:
             - "5432"
         volumes:
-            - ./docker-vol/postgresql:/var/lib/postgresql
+            - docker-localshop-db-data:/var/lib/postgresql
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 256M
+                reservations:
+                    memory: 256M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
 
     web:
         build: .
-        volumes:
-            - ./docker-vol:/opt/localshop
-        links:
-            - db:db
+        image: mvantellingen/localshop:0.1.11
         environment:
             - DJANGO_SECRET_KEY
             - DATABASE_URL
             - DJANGO_MEDIA_ROOT
-        ports:
-            - "8000:8000"
         command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
-
+        ports:
+            - "8000"
+        volumes:
+            - ./docker-vol:/opt/localshop
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 128M
+                reservations:
+                    memory: 128M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
 
     worker:
         build: .
-        volumes:
-            - ./docker-vol:/opt/localshop
-        links:
-            - db:db
+        image: mvantellingen/localshop:0.1.11
         environment:
             - DJANGO_SECRET_KEY
             - DATABASE_URL
             - DJANGO_MEDIA_ROOT
         entrypoint:
             localshop
-        command:
-            celery worker -B -E
+        command: celery worker -B -E
+        volumes:
+            - ./docker-vol:/opt/localshop
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 128M
+                reservations:
+                    memory: 128M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
+
+
+volumes:
+    docker-localshop-db-data:
+        external:
+            name: docker-localshop-db-data
+
+
+networks:
+    servicenet:
+        driver: overlay
+        ipam:
+            driver: default
+            config:
+                - subnet: 192.168.32.48/28
