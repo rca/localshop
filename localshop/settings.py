@@ -11,7 +11,7 @@ djcelery.setup_loader()
 from configurations import values, Settings
 from configurations.utils import uppercase_attributes
 
- 
+
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
@@ -265,6 +265,7 @@ class Base(Settings):
     AWS_STORAGE_BUCKET_NAME = values.Value()
 
     # LDAP Authentication
+    AUTH_LDAP_START_TLS = True
     AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', 'ldap://ldapsample.com')
     AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', 'cn=username,dc=ldapsample,dc=com')
     AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD', 'sompass')
