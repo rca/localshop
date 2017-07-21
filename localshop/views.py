@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -9,3 +10,7 @@ def index(request):
     if request.method == 'POST':
         return xmlrpc.handle_request(request)
     return redirect('dashboard:index')
+
+
+def ping(request):
+    return HttpResponse('')
