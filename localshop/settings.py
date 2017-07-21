@@ -265,6 +265,9 @@ class Base(Settings):
     AWS_STORAGE_BUCKET_NAME = values.Value()
 
     # LDAP Authentication
+    AUTH_LDAP_GLOBAL_OPTIONS = {
+        ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER,
+    }
     AUTH_LDAP_START_TLS = True
     AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', 'ldap://ldapsample.com')
     AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', 'cn=username,dc=ldapsample,dc=com')
