@@ -3,7 +3,8 @@ FROM python:2.7
 MAINTAINER  Michael van Tellingen <michaelvantellingen@gmail.com>
 
 # Install required packages
-RUN apt-get update
+RUN apt-get update && \
+  apt-get install -y libldap2-dev libsasl2-dev
 
 # Create user / env
 RUN useradd -r localshop -d /opt/localshop
