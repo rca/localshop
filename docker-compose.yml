@@ -3,13 +3,14 @@ services:
     db:
         image: postgres:9.6
         environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
             - POSTGRES_DB
             - POSTGRES_USER
             - POSTGRES_PASSWORD
         ports:
             - "5432"
         volumes:
-            - docker-localshop-db-data:/var/lib/postgresql
+            - docker-localshop-db-data:/var/lib/postgresql/data
         networks:
             - servicenet
         deploy:
