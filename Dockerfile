@@ -22,10 +22,16 @@ run pip install psycopg2==2.6.0
 run pip install uwsgi==2.0.10
 run pip install honcho==0.6.6
 
+# change working directory
+WORKDIR /opt/localshop/src/localshop
+
+# Install requirements
+COPY requirements.txt /opt/localshop/src/localshop
+RUN pip install -r requirements.txt
+
 # Install localshop
 COPY ./ /opt/localshop/src/localshop
-RUN cd /opt/localshop/src/localshop && \
-  pip install .
+RUN pip install .
 
 # Switch to user
 USER localshop
