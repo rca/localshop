@@ -13,4 +13,10 @@ def index(request):
 
 
 def ping(request):
-    return HttpResponse('')
+    content = ''
+    content_length = len(content)
+
+    response = HttpResponse(content)
+    response['Transfer-Encoding'] = 'chunked'
+
+    return response
