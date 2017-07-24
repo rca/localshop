@@ -33,9 +33,6 @@ RUN pip install -r requirements.txt
 COPY ./ /opt/localshop/src/localshop
 RUN pip install .
 
-# Switch to user
-USER localshop
-
 # Initialize the app
 RUN DJANGO_SECRET_KEY=tmp localshop collectstatic --noinput
 
