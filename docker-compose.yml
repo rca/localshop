@@ -27,7 +27,7 @@ services:
 
     web:
         build: .
-        image: registry.osslabs.net/localshop:1.1.2
+        image: registry.osslabs.net/localshop:1.1.7
         environment:
             - DJANGO_SECRET_KEY
             - DATABASE_URL
@@ -57,7 +57,7 @@ services:
                 window: 120s
 
     worker:
-        image: registry.osslabs.net/localshop:1.1.2
+        image: registry.osslabs.net/localshop:1.1.7
         environment:
             - DJANGO_SECRET_KEY
             - DATABASE_URL
