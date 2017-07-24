@@ -93,8 +93,7 @@ class Base(Settings):
     # Absolute filesystem path to the directory that will hold user-uploaded files.
     # Example: "/home/media/media.lawrence.com/media/"
     # MEDIA_ROOT = 'files'
-    STATIC_ROOT = values.Value(
-        default=os.path.join(BASE_DIR, 'public', 'media'))
+    MEDIA_ROOT = '/media'
 
     # Absolute path to the directory static files should be collected to.
     # Don't put anything in this directory yourself; store your static files
