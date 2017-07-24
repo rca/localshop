@@ -41,7 +41,7 @@ services:
         ports:
             - "8000:8000"
         volumes:
-            - docker-localshop-web-data:/opt/localshop
+            - /srv/data/docker-pypi-web-data:/media
         networks:
             - servicenet
         deploy:
@@ -65,6 +65,8 @@ services:
         entrypoint:
             localshop
         command: celery worker -B -E
+        volumes:
+            - /srv/data/docker-pypi-web-data:/media
         networks:
             - servicenet
         deploy:
@@ -84,10 +86,6 @@ volumes:
     docker-localshop-db-data:
         external:
             name: docker-localshop-db-data
-
-    docker-localshop-web-data:
-        external:
-            name: docker-localshop-web-data
 
 
 networks:
