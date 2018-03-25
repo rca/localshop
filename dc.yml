@@ -1,0 +1,35 @@
+profiles:
+  local:
+    - docker-compose.yml
+
+  swarm:
+    - docker-compose.yml
+
+
+tasks:
+  dev:
+    command: dc --profile swarm --environment dev-pypi
+
+  dev-deploy:
+    command: dc task dev --deploy
+
+  dev-publish:
+    command: dc task dev --tag-version --tag-docker-image --write-tag --push build
+
+  local:
+    command: dc --profile local --environment local-pypi
+
+  local-deploy:
+    command: dc task local up -d
+
+  local-publish:
+    command: dc task local build
+
+  prod:
+    command: dc --profile swarm --environment prod-pypi
+
+  prod-deploy:
+    command: dc task prod --deploy
+
+  prod-publish:
+    command: dc task prod --tag-version --tag-docker-image --write-tag --push build
