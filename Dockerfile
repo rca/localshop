@@ -3,7 +3,8 @@ FROM python:2.7
 MAINTAINER  Michael van Tellingen <michaelvantellingen@gmail.com>
 
 # Install required packages
-RUN apt-get update
+RUN apt-get update && \
+  apt-get install -y libldap2-dev libsasl2-dev
 
 # Create user / env
 RUN useradd -r localshop -d /opt/localshop
@@ -21,13 +22,16 @@ run pip install psycopg2==2.6.0
 run pip install uwsgi==2.0.10
 run pip install honcho==0.6.6
 
+# change working directory
+WORKDIR /opt/localshop/src/localshop
+
+# Install requirements
+COPY requirements.txt /opt/localshop/src/localshop
+RUN pip install -r requirements.txt
+
 # Install localshop
 COPY ./ /opt/localshop/src/localshop
-RUN cd /opt/localshop/src/localshop && \
-  pip install .
-
-# Switch to user
-USER localshop
+RUN pip install .
 
 # Initialize the app
 RUN DJANGO_SECRET_KEY=tmp localshop collectstatic --noinput

@@ -11,6 +11,10 @@ djcelery.setup_loader()
 from configurations import values, Settings
 from configurations.utils import uppercase_attributes
 
+
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
 try:
     DEFAULT_PATH = os.environ['LOCALSHOP_HOME']
 except KeyError:
@@ -89,8 +93,7 @@ class Base(Settings):
     # Absolute filesystem path to the directory that will hold user-uploaded files.
     # Example: "/home/media/media.lawrence.com/media/"
     # MEDIA_ROOT = 'files'
-    STATIC_ROOT = values.Value(
-        default=os.path.join(BASE_DIR, 'public', 'media'))
+    MEDIA_ROOT = '/media'
 
     # Absolute path to the directory static files should be collected to.
     # Don't put anything in this directory yourself; store your static files
@@ -141,6 +144,7 @@ class Base(Settings):
 
     MIDDLEWARE_CLASSES = (
         'django.middleware.common.CommonMiddleware',
+        'django.middleware.http.ConditionalGetMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -200,6 +204,8 @@ class Base(Settings):
     # Auth settings
     AUTHENTICATION_BACKENDS = (
         'localshop.apps.accounts.backend.AccessKeyBackend',
+        'localshop.apps.accounts.backend.LDAPBackend',
+        'django_auth_ldap.backend.LDAPBackend',
         'django.contrib.auth.backends.ModelBackend',
     )
     LOGIN_URL = '/accounts/login'
@@ -258,6 +264,22 @@ class Base(Settings):
     AWS_SECRET_ACCESS_KEY = values.Value()
     AWS_STORAGE_BUCKET_NAME = values.Value()
 
+    # LDAP Authentication
+    AUTH_LDAP_GLOBAL_OPTIONS = {
+        ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER,
+    }
+    AUTH_LDAP_START_TLS = True
+    AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI', 'ldap://ldapsample.com')
+    AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN', 'cn=username,dc=ldapsample,dc=com')
+    AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD', 'sompass')
+
+    #AUTH_LDAP_USER_DN_TEMPLATE = "uid=%(user)s,ou=users,dc=ldapsample,dc=com"
+    if 'AUTH_LDAP_USER_DN_TEMPLATE' in os.environ:
+        AUTH_LDAP_USER_DN_TEMPLATE = os.environ['AUTH_LDAP_USER_DN_TEMPLATE']
+
+    AUTH_LDAP_USER_SEARCH_BASE = os.environ.get('AUTH_LDAP_USER_SEARCH_BASE', 'ou=users,dc=ldapsample,dc=com')
+    AUTH_LDAP_USER_SEARCH_QUERY = os.environ.get('AUTH_LDAP_USER_SEARCH_QUERY', '(uid=%(user)s)')
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(AUTH_LDAP_USER_SEARCH_BASE, ldap.SCOPE_SUBTREE, AUTH_LDAP_USER_SEARCH_QUERY)
 
 
 class TestConfig(Base):

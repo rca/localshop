@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^accounts/',
         include('localshop.apps.accounts.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^ping/', 'localshop.views.ping', name='ping'),
 ]

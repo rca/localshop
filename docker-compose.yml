@@ -1,40 +1,97 @@
-db:
-    image: postgres:9.6
-    environment:
-        - POSTGRES_DB
-        - POSTGRES_USER
-        - POSTGRES_PASSWORD
-    ports:
-        - "5432"
-    volumes:
-        - ./docker-vol/postgresql:/var/lib/postgresql
+version: '3.3'
+services:
+    db:
+        image: postgres:9.6
+        environment:
+            - PGDATA=/var/lib/postgresql/data/pgdata
+            - POSTGRES_DB
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+        ports:
+            - "5432"
+        volumes:
+            - docker-localshop-db-data:/var/lib/postgresql/data
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 256M
+                reservations:
+                    memory: 256M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
 
-web:
-    build: .
-    volumes:
-        - ./docker-vol:/opt/localshop
-    links:
-        - db:db
-    environment:
-        - DJANGO_SECRET_KEY
-        - DATABASE_URL
-        - DJANGO_MEDIA_ROOT
-    ports:
-        - "8000:8000"
-    command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
+    web:
+        build: .
+        image: registry.osslabs.net/localshop:1.1.7
+        environment:
+            - DJANGO_SECRET_KEY
+            - DATABASE_URL
+            - DJANGO_MEDIA_ROOT
+            - AUTH_LDAP_BIND_PASSWORD
+            - AUTH_LDAP_SERVER_URI
+            - AUTH_LDAP_BIND_DN
+            - AUTH_LDAP_USER_SEARCH_BASE
+            - AUTH_LDAP_USER_DN_TEMPLATE
+        command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
+        ports:
+            - "8000:8000"
+        volumes:
+            - /srv/data/docker-pypi-web-data:/media
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 256M
+                reservations:
+                    memory: 256M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
+
+    worker:
+        image: registry.osslabs.net/localshop:1.1.7
+        environment:
+            - DJANGO_SECRET_KEY
+            - DATABASE_URL
+            - DJANGO_MEDIA_ROOT
+        entrypoint:
+            localshop
+        command: celery worker -B -E
+        volumes:
+            - /srv/data/docker-pypi-web-data:/media
+        networks:
+            - servicenet
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    memory: 256M
+                reservations:
+                    memory: 256M
+                    cpus: '0.1'
+            restart_policy:
+                delay: 5s
+                window: 120s
 
 
-worker:
-    build: .
-    volumes:
-        - ./docker-vol:/opt/localshop
-    links:
-        - db:db
-    environment:
-        - DJANGO_SECRET_KEY
-        - DATABASE_URL
-        - DJANGO_MEDIA_ROOT
-    entrypoint:
-        localshop
-    command:
-        celery worker -B -E
+volumes:
+    docker-localshop-db-data:
+        external:
+            name: docker-localshop-db-data
+
+
+networks:
+    servicenet:
+        driver: overlay
+        ipam:
+            driver: default
+            config:
+                - subnet: ${DOCKER_SUBNET}
