@@ -96,6 +96,35 @@ services:
                 delay: 5s
                 window: 120s
 
+    nonpriv_proxy:
+      image: registry.osslabs.net/nonpriv-proxy:7da6f46-master
+      restart: always
+      labels:
+        com.openslate.service_ip: ${SERVICE_IP}/24
+      networks:
+        - hostnet
+      environment:
+        - SERVICE_IP
+        - SERVICE_PORT
+        - VAULT_ADDR
+        - VAULT_CERTIFICATE_PATH=/v1/secret/ssl/star.osslabs.net
+        - VAULT_TOKEN
+      deploy:
+        placement:
+          constraints:
+            - node.role == worker
+        replicas: 1
+        resources:
+          limits:
+            memory: 128M
+          reservations:
+            memory: 64M
+        restart_policy:
+          condition: any
+          delay: 5s
+          window: 120s
+
+
 
 volumes:
     docker-localshop-db-data:
@@ -104,6 +133,10 @@ volumes:
 
 
 networks:
+    hostnet:
+      external:
+        name: host
+
     servicenet:
         driver: overlay
         ipam:
