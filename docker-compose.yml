@@ -37,6 +37,7 @@ services:
             - DJANGO_SECRET_KEY
             - DATABASE_URL
             - DJANGO_MEDIA_ROOT
+            - DJANGO_DEBUG
             - AUTH_LDAP_BIND_PASSWORD
             - AUTH_LDAP_SERVER_URI
             - AUTH_LDAP_BIND_DN
