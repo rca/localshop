@@ -52,7 +52,9 @@ class Base(Settings):
 
     CACHES = values.CacheURLValue('dummy://')
 
-    DEBUG = False
+    django_debug = os.environ.get('DJANGO_DEBUG', 'False').upper() == 'TRUE'
+
+    DEBUG = django_debug
     TEMPLATE_DEBUG = DEBUG
 
     ADMINS = (
