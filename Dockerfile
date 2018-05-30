@@ -19,7 +19,7 @@ ENV DJANGO_STATIC_ROOT /opt/localshop/static
 
 # Install uWSGI / Honcho
 run pip install psycopg2-binary==2.7.4
-run pip install uwsgi==2.0.10
+run pip install uwsgi==2.0.17
 run pip install honcho==0.6.6
 
 # change working directory
