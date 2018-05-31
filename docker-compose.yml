@@ -98,7 +98,7 @@ services:
                 window: 120s
 
     nonpriv_proxy:
-      image: registry.osslabs.net/nonpriv-proxy:eaef32f-refresh-vault-token
+      image: registry.osslabs.net/nonpriv-proxy:9c966a9-refresh-vault-token
       restart: always
       labels:
         com.openslate.service_ip: ${SERVICE_IP}/24
