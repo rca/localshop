@@ -18,6 +18,7 @@ services:
             placement:
                 constraints:
                     - node.role == worker
+                    - node.id == i6aeqlkjfp180f4miiktale12  # prod-docker-14 for now
                 preferences:
                     - spread: node.id
             resources:
