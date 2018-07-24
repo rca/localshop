@@ -2,8 +2,6 @@ version: '3.3'
 services:
     db:
         image: postgres:9.6
-        ports:
-            - "30002:5432"
         volumes:
             - docker-localshop-db-data:/var/lib/postgresql/data
         networks:
@@ -32,8 +30,6 @@ services:
         build: ..
         image: ${DOCKER_IMAGE}
         command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
-        ports:
-            - "8000:8000"
         volumes:
             - ${PYPI_MOUNT_PATH}:/media
         networks:
