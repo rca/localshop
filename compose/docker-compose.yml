@@ -1,9 +1,11 @@
 version: '3.3'
 services:
-    db:
-        image: postgres:9.6
+    app:
+        build: ..
+        image: ${DOCKER_IMAGE}
+        command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
         volumes:
-            - docker-localshop-db-data:/var/lib/postgresql/data
+            - ${PYPI_MOUNT_PATH}:/media
         networks:
             - servicenet
         deploy:
@@ -11,7 +13,6 @@ services:
             placement:
                 constraints:
                     - node.role == worker
-                    - node.id == i6aeqlkjfp180f4miiktale12  # prod-docker-14 for now
                 preferences:
                     - spread: node.id
             resources:
@@ -25,13 +26,11 @@ services:
                 delay: 5s
                 max_attempts: 20
                 window: 120s
-
-    web:
-        build: ..
-        image: ${DOCKER_IMAGE}
-        command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
+                
+    db:
+        image: postgres:9.6
         volumes:
-            - ${PYPI_MOUNT_PATH}:/media
+            - docker-localshop-db-data:/var/lib/postgresql/data
         networks:
             - servicenet
         deploy:
@@ -39,6 +38,7 @@ services:
             placement:
                 constraints:
                     - node.role == worker
+                    - node.id == i6aeqlkjfp180f4miiktale12  # prod-docker-14 for now
                 preferences:
                     - spread: node.id
             resources:
