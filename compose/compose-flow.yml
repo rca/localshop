@@ -2,6 +2,8 @@ profiles:
 
   prod:
     - docker-compose.yml
+    - env
 
   dev:
     - docker-compose.yml
+    - env
