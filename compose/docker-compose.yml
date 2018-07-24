@@ -1,85 +1,30 @@
 version: '3.3'
 services:
     app:
-        build: ..
-        image: ${DOCKER_IMAGE}
-        command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
-        volumes:
-            - ${PYPI_MOUNT_PATH}:/media
-        networks:
-            - servicenet
-        deploy:
-            replicas: 1
-            placement:
-                constraints:
-                    - node.role == worker
-                preferences:
-                    - spread: node.id
-            resources:
-                limits:
-                    memory: 256M
-                reservations:
-                    memory: 256M
-                    cpus: '0.1'
-            restart_policy:
-                condition: any
-                delay: 5s
-                max_attempts: 20
-                window: 120s
-                
+      build: ..
+      image: ${DOCKER_IMAGE}
+      command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
+      volumes:
+        - ${PYPI_MOUNT_PATH}:/media
+      networks:
+        - servicenet
+
     db:
-        image: postgres:9.6
-        volumes:
-            - docker-localshop-db-data:/var/lib/postgresql/data
-        networks:
-            - servicenet
-        deploy:
-            replicas: 1
-            placement:
-                constraints:
-                    - node.role == worker
-                    - node.id == i6aeqlkjfp180f4miiktale12  # prod-docker-14 for now
-                preferences:
-                    - spread: node.id
-            resources:
-                limits:
-                    memory: 256M
-                reservations:
-                    memory: 256M
-                    cpus: '0.1'
-            restart_policy:
-                condition: any
-                delay: 5s
-                max_attempts: 20
-                window: 120s
+      image: postgres:9.6
+      volumes:
+        - docker-localshop-db-data:/var/lib/postgresql/data
+      networks:
+        - servicenet
 
     worker:
-        image: ${DOCKER_IMAGE}
-        entrypoint:
-            localshop
-        command: celery worker -B -E
-        volumes:
-            - ${PYPI_MOUNT_PATH}:/media
-        networks:
-            - servicenet
-        deploy:
-            replicas: 1
-            placement:
-                constraints:
-                    - node.role == worker
-                preferences:
-                    - spread: node.id
-            resources:
-                limits:
-                    memory: 256M
-                reservations:
-                    memory: 256M
-                    cpus: '0.1'
-            restart_policy:
-                condition: any
-                delay: 5s
-                max_attempts: 20
-                window: 120s
+      image: ${DOCKER_IMAGE}
+      entrypoint:
+        localshop
+      command: celery worker -B -E
+      volumes:
+        - ${PYPI_MOUNT_PATH}:/media
+      networks:
+        - servicenet
 
     service_proxy:
       image: registry.osslabs.net/service-proxy:0.1.1
@@ -88,22 +33,6 @@ services:
         com.openslate.service_ip: ${SERVICE_IP}/24
       networks:
         - hostnet
-      deploy:
-        placement:
-          constraints:
-            - node.role == worker
-        replicas: 1
-        resources:
-          limits:
-            memory: 128M
-          reservations:
-            memory: 64M
-        restart_policy:
-          condition: any
-          delay: 5s
-          max_attempts: 20
-          window: 120s
-
 
 
 volumes:
@@ -118,8 +47,8 @@ networks:
         name: host
 
     servicenet:
-        driver: overlay
-        ipam:
-            driver: default
-            config:
-                - subnet: ${DOCKER_SUBNET}
+      driver: overlay
+      ipam:
+        driver: default
+        config:
+          - subnet: ${DOCKER_SUBNET}

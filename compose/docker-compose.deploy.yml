@@ -1,0 +1,78 @@
+services:
+    app:
+      deploy:
+        replicas: 1
+        placement:
+          constraints:
+            - node.role == worker
+          preferences:
+            - spread: node.id
+        resources:
+          limits:
+            memory: 256M
+          reservations:
+            memory: 256M
+            cpus: '0.1'
+        restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 20
+          window: 120s
+
+    db:
+      deploy:
+        replicas: 1
+        placement:
+          constraints:
+            - node.role == worker
+            - node.id == i6aeqlkjfp180f4miiktale12  # prod-docker-14 for now
+          preferences:
+            - spread: node.id
+        resources:
+          limits:
+            memory: 256M
+          reservations:
+            memory: 256M
+            cpus: '0.1'
+        restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 20
+          window: 120s
+
+    worker:
+      deploy:
+        replicas: 1
+        placement:
+          constraints:
+            - node.role == worker
+          preferences:
+            - spread: node.id
+        resources:
+          limits:
+            memory: 256M
+          reservations:
+            memory: 256M
+            cpus: '0.1'
+        restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 20
+          window: 120s
+
+    service_proxy:
+      deploy:
+        placement:
+          constraints:
+            - node.role == worker
+        replicas: 1
+        resources:
+          limits:
+            memory: 128M
+          reservations:
+            memory: 64M
+        restart_policy:
+          condition: any
+          delay: 5s
+          max_attempts: 20
+          window: 120s
