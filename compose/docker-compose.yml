@@ -29,7 +29,7 @@ services:
                 window: 120s
 
     web:
-        build: .
+        build: ..
         image: ${DOCKER_IMAGE}
         command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
         ports:
