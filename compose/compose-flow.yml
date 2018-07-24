@@ -1,0 +1,4 @@
+profiles:
+
+  prod:
+    - docker-compose.yml
