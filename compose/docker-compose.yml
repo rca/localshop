@@ -12,7 +12,7 @@ services:
     db:
       image: postgres:9.6
       volumes:
-        - docker-localshop-db-data:/var/lib/postgresql/data
+        - ${PYPI_DB_MOUNT_PATH}:/var/lib/postgresql/data
       networks:
         - servicenet
 
@@ -33,12 +33,6 @@ services:
         com.openslate.service_ip: ${SERVICE_IP}/24
       networks:
         - hostnet
-
-
-volumes:
-    docker-localshop-db-data:
-        external:
-            name: docker-localshop-db-data
 
 
 networks:
