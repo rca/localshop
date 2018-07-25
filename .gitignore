@@ -12,3 +12,4 @@ localshop.db
 .cache
 /coverage.xml
 .env
+compose/compose-flow-*.yml
