@@ -60,6 +60,12 @@ services:
           window: 120s
 
     service_proxy:
+      image: registry.osslabs.net/service-proxy:0.1.1
+      restart: always
+      labels:
+        com.openslate.service_ip: ${SERVICE_IP}/24
+      networks:
+        - hostnet
       deploy:
         placement:
           constraints:
