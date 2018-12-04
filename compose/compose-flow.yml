@@ -5,6 +5,12 @@ profiles:
     - env
     - ports
 
+  local:
+    - docker-compose.yml
+    - postgres
+    - env
+    - ports
+
   prod:
     - docker-compose.yml
     - deploy
