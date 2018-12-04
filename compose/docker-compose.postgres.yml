@@ -3,8 +3,6 @@ services:
     image: postgres:9.6
     volumes:
       - ${PYPI_DB_MOUNT_PATH}:/var/lib/postgresql/data
-    networks:
-      - servicenet
 
 
 volumes:

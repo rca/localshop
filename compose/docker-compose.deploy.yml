@@ -1,5 +1,7 @@
 services:
     app:
+      networks:
+        - servicenet
       deploy:
         replicas: 1
         placement:
@@ -40,6 +42,8 @@ services:
           window: 120s
 
     worker:
+      networks:
+        - servicenet
       deploy:
         replicas: 1
         placement:
@@ -66,6 +70,12 @@ services:
         com.openslate.service_ip: ${SERVICE_IP}/24
       networks:
         - hostnet
+      environment:
+        - SERVICE_IP
+        - SERVICE_PORT
+        - VAULT_ADDR
+        - VAULT_CERTIFICATE_PATH=/v1/secret/ssl/star.osslabs.net
+        - VAULT_TOKEN
       deploy:
         placement:
           constraints:
@@ -81,3 +91,16 @@ services:
           delay: 5s
           max_attempts: 20
           window: 120s
+
+
+networks:
+    hostnet:
+      external:
+        name: host
+
+    servicenet:
+      driver: overlay
+      ipam:
+        driver: default
+        config:
+          - subnet: ${DOCKER_SUBNET}

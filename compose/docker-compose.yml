@@ -6,8 +6,6 @@ services:
       command: uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
       volumes:
         - ${PYPI_MOUNT_PATH}:/media
-      networks:
-        - servicenet
 
     worker:
       image: ${DOCKER_IMAGE}
@@ -16,18 +14,3 @@ services:
       command: celery worker -B -E
       volumes:
         - ${PYPI_MOUNT_PATH}:/media
-      networks:
-        - servicenet
-
-
-networks:
-    hostnet:
-      external:
-        name: host
-
-    servicenet:
-      driver: overlay
-      ipam:
-        driver: default
-        config:
-          - subnet: ${DOCKER_SUBNET}
