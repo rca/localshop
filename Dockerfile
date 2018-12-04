@@ -36,6 +36,9 @@ RUN pip install .
 # Initialize the app
 RUN DJANGO_SECRET_KEY=tmp localshop collectstatic --noinput
 
+ARG VERSION
+ENV VERSION=${VERSION}
+
 EXPOSE 8000
 
 CMD uwsgi --http 0.0.0.0:8000 --module localshop.wsgi --master --die-on-term
