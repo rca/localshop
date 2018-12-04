@@ -5,3 +5,8 @@ services:
       - ${PYPI_DB_MOUNT_PATH}:/var/lib/postgresql/data
     networks:
       - servicenet
+
+
+volumes:
+  ${PYPI_DB_MOUNT_PATH}:
+    driver: local
